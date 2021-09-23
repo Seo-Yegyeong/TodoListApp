@@ -14,14 +14,14 @@ public class TodoMain {
 		TodoList l = new TodoList();
 		boolean isList = false;
 		boolean quit = false;
-		String choice = "";
 		
 		System.out.println("안녕하세요! To do List 관리 어플입니다. 유익한 시간 되세요!^^");
+		//TodoUtil.loadList(l, "todolist.txt");
 		Menu.displaymenu();
 		do {
 			Menu.prompt();
 			isList = false;
-			choice = sc.nextLine().trim();
+			String choice = sc.nextLine().trim();
 			
 			switch (choice) {
 
@@ -59,6 +59,7 @@ public class TodoMain {
 
 			case "exit":
 				quit = true;
+				TodoUtil.saveList(l, "todolist.txt");
 				break;
 				
 			case "help":

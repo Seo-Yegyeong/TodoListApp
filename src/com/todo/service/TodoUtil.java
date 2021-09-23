@@ -1,5 +1,8 @@
 package com.todo.service;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import com.todo.dao.TodoItem;
@@ -82,9 +85,45 @@ public class TodoUtil {
 	public static void listAll(TodoList l) {
 		if(l.getList().isEmpty())
 			System.out.println("To do list가 현재 비어있습니다. 예쁘게 채워주세요! :)");
+		String title = "Title";
+		String desc = "Description";
+		System.out.printf("\n--------- Total Items ---------\n%-20s      %-20s\n", title, desc);
 		for (TodoItem item : l.getList()) {
-			System.out.printf("Item Title: %-20s | Item Description: %-20s\n", item.getTitle(), item.getDesc());
+			System.out.printf("%-20s | %-20s\n", item.getTitle(), item.getDesc());
 		}
 		System.out.print("\n");
 	}
+	
+	//Implement File I/O
+	public static void saveList(TodoList l, String filename) {
+		File file = new File(filename);
+		try(FileWriter f = new FileWriter(file)) {
+			for(int i=0; i<l.size(); i++) {
+				TodoItem tmp = l.get(i);
+				System.out.println("TEST!!" + tmp.toSaveString());
+				f.write(tmp.toSaveString());
+			}
+			/*
+			Iterator<TodoItem> it = l.get(0);
+			while(it.hasNext()) {
+				TodoItem i = it.next();
+				System.out.println("TEST!!" + i.toSaveString());
+				f.write(i.toSaveString());
+			}*/
+			//l.forEach(item -> {f.write(item.toSaveString());} );
+			
+//			Consumer<TodoItem> lambda = item -> f.write(item.toSaveString());
+//			l.forEach(lambda);
+			
+			f.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/*public static void loadList(TodoList l, String filename) {
+		
+	}*/
+	
 }
