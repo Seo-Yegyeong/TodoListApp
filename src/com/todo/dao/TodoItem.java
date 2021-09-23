@@ -17,7 +17,14 @@ public class TodoItem {
         this.current_date=format1.format(now);
     }
     
-    public String getTitle() {
+    public TodoItem(String nextToken, String nextToken2, String nextToken3) {
+		// TODO Auto-generated constructor stub
+    	this.title=nextToken;
+        this.desc=nextToken2;
+        this.current_date=nextToken3;
+	}
+
+	public String getTitle() {
         return title;
     }
 

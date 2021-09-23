@@ -1,5 +1,6 @@
 package com.todo;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import com.todo.dao.TodoList;
@@ -16,7 +17,12 @@ public class TodoMain {
 		boolean quit = false;
 		
 		System.out.println("안녕하세요! To do List 관리 어플입니다. 유익한 시간 되세요!^^");
-		//TodoUtil.loadList(l, "todolist.txt");
+		try {
+			TodoUtil.loadList(l, "todolist.txt");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Menu.displaymenu();
 		do {
 			Menu.prompt();

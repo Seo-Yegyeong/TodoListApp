@@ -1,6 +1,9 @@
 package com.todo.service;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -100,21 +103,10 @@ public class TodoUtil {
 		try(FileWriter f = new FileWriter(file)) {
 			for(int i=0; i<l.size(); i++) {
 				TodoItem tmp = l.get(i);
-				System.out.println("TEST!!" + tmp.toSaveString());
+				//System.out.println("TEST!!" + tmp.toSaveString());
 				f.write(tmp.toSaveString());
 			}
-			/*
-			Iterator<TodoItem> it = l.get(0);
-			while(it.hasNext()) {
-				TodoItem i = it.next();
-				System.out.println("TEST!!" + i.toSaveString());
-				f.write(i.toSaveString());
-			}*/
-			//l.forEach(item -> {f.write(item.toSaveString());} );
-			
-//			Consumer<TodoItem> lambda = item -> f.write(item.toSaveString());
-//			l.forEach(lambda);
-			
+			System.out.println("모든 데이터가 저장되었습니다!");
 			f.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -122,8 +114,24 @@ public class TodoUtil {
 		}
 	}
 	
-	/*public static void loadList(TodoList l, String filename) {
+	public static void loadList(TodoList l, String filename) throws IOException {
+		try {
+			FileReader fr = new FileReader(filename);
+			BufferedReader br = new BufferedReader(fr);
+			String line = br.readLine();
+			StringTokenizer st = new StringTokenizer(line, "#");
+			while(fr.read()!=-1) {
+				TodoItem item = new TodoItem(st.nextToken(), st.nextToken(), st.nextToken());
+				l.add(item);
+			}
+			System.out.println(l.size() + "개의 항목을 읽었습니다!");
+			br.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("todolist.txt 파일이 없습니다."); //exception customizing 다시 익히기!
+		}
 		
-	}*/
+	}
 	
 }
