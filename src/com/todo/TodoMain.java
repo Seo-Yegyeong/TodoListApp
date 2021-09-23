@@ -14,22 +14,27 @@ public class TodoMain {
 		TodoList l = new TodoList();
 		boolean isList = false;
 		boolean quit = false;
+		String choice = "";
+		
+		System.out.println("안녕하세요! To do List 관리 어플입니다. 유익한 시간 되세요!^^");
+		Menu.displaymenu();
 		do {
-			Menu.displaymenu();
+			Menu.prompt();
 			isList = false;
-			String choice = sc.next();
+			choice = sc.nextLine().trim();
+			
 			switch (choice) {
 
 			case "add":
-				TodoUtil.createItem(l);
+				TodoUtil.createItem(l, sc);
 				break;
 			
 			case "del":
-				TodoUtil.deleteItem(l);
+				TodoUtil.deleteItem(l, sc);
 				break;
 				
 			case "edit":
-				TodoUtil.updateItem(l);
+				TodoUtil.updateItem(l, sc);
 				break;
 				
 			case "ls":
@@ -55,13 +60,17 @@ public class TodoMain {
 			case "exit":
 				quit = true;
 				break;
-
+				
+			case "help":
+				Menu.displaymenu();
+				break;
+				
 			default:
-				System.out.println("please enter one of the above mentioned command");
+				System.out.println("잘못 입력하셨습니다. 메뉴를 확인하시고 해당 단어를 입력해주세요! >");
 				break;
 			}
-			
 			if(isList) l.listAll();
 		} while (!quit);
+		sc.close();
 	}
 }
