@@ -36,11 +36,19 @@ public class TodoList {
 	}
 
 	public void listAll() {
-		System.out.println("\n"
-				+ "inside list_All method\n");
-		for (TodoItem myitem : list) {
-			System.out.println(myitem.getTitle() + myitem.getDesc());
+		if(list.isEmpty()) {
+			System.out.println("정렬할 항목이 없습니다! Add로 리스트를 채워주세요! :)");
+			return;
 		}
+		String title = "Title";
+		String desc = "Description";
+		System.out.printf("\n--------- Total Items ---------\n%-20s      %-20s\n", title, desc);
+		int i=1;
+		for (TodoItem myitem : list) {
+			System.out.printf("%d. %-20s | %-20s\n", i, myitem.getTitle(), myitem.getDesc());
+			i++;
+		}
+		System.out.print("\n");
 	}
 	
 	public void reverseList() {

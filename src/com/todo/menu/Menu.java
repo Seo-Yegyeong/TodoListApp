@@ -18,6 +18,6 @@ public class Menu {
     }
     
     public static void prompt() {
-    	System.out.print("메뉴 목록 중 괄호 안의 단어를 입력해주세요. (도움이 필요 시 help 입력) > ");
+    	System.out.print("메뉴 목록 중 괄호 안의 단어를 입력해주세요. (도움 필요 시 help 입력) > ");
     }
 }
