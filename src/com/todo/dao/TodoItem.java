@@ -4,24 +4,54 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TodoItem {
+	private String category;
     private String title;
     private String desc;
+    private String due_date;
     private String current_date;
-
-
-    public TodoItem(String title, String desc){
-        this.title=title;
-        this.desc=desc;
-        SimpleDateFormat format1 = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-        Date now = new Date();
-        this.current_date=format1.format(now);
-    }
     
-    public TodoItem(String nextToken, String nextToken2, String nextToken3) {
+    /**
+     * Constructor
+     * @param title
+     * @param desc
+     */
+    public TodoItem(String cate, String title, String desc, String due_date) {
 		// TODO Auto-generated constructor stub
-    	this.title=nextToken;
-        this.desc=nextToken2;
-        this.current_date=nextToken3;
+    	this.category=cate;
+    	this.title=title;
+        this.desc=desc;
+        this.due_date=due_date;
+        SimpleDateFormat format1 = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+        this.current_date=format1.format(new Date());
+	}
+    
+    /**
+     * Using when file uploaded.
+     * @param nextToken
+     * @param nextToken2
+     * @param nextToken3
+     * @param nextToken4
+     * @param nextToken5
+     */
+	public TodoItem(String nextToken, String nextToken2, String nextToken3, String nextToken4, String nextToken5) {
+		// TODO Auto-generated constructor stub
+		this.category=nextToken;
+    	this.title=nextToken2;
+        this.desc=nextToken3;
+        this.due_date=nextToken4;
+        this.current_date=nextToken5;
+	}
+
+	/**
+     * Getter, Setter
+     * @return
+     */
+    public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 	public String getTitle() {
@@ -39,6 +69,14 @@ public class TodoItem {
     public void setDesc(String desc) {
         this.desc = desc;
     }
+    
+    public String getDue_date() {
+		return due_date;
+	}
+
+	public void setDue_date(String due_date) {
+		this.due_date = due_date;
+	}
 
     public String getCurrent_date() {
         return current_date;
@@ -48,7 +86,16 @@ public class TodoItem {
         this.current_date = current_date;
     }
     
+    
+    @Override
+	public String toString() {
+		return "[" + category + "] " + title + " - " + desc + " - due: " + due_date
+				+ " (" + current_date + ")";
+	}
+
+	//for saving file
     public String toSaveString() {
-    	return title + "##" + desc + "##" + current_date + "\n";
+    	//우선은 이렇게 하고 json 공부하면 추가해보자!
+    	return category + "##" + title + "##" + desc + "##" + due_date + "##" + current_date + "\n";
     }
 }
