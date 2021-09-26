@@ -64,12 +64,16 @@ public class TodoMain {
 				break;
 				
 			case "ls_date_desc":
-				l.sortByReverseDate();				
+				l.sortByReverseDate();			
 				isList = true;
 				break;
 				
 			case "find":
 				TodoUtil.findItems(l, sc);
+				break;
+				
+			case "find_cate":
+				TodoUtil.findWithCategory(l, sc);
 				break;
 				
 			case "help":

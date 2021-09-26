@@ -49,12 +49,12 @@ public class TodoUtil {
 				+ "========== Delete Item Section ==========\n"
 				+ "The number of item to remove > ");
 		index = mine.nextInt() - 1;
-		while(index<0 || l.size()<index) {
+		while(index<0 || l.getList().size()<index) {
 			System.out.println("잘못 입력하셨습니다. 다시 입력해주세요! > ");
 			index = mine.nextInt() - 1;
 		}
 		
-		TodoItem tmp = l.get(index);
+		TodoItem tmp = l.getList().get(index);
 		System.out.print(tmp.toString() + "\n정말 삭제하시겠습니까? 삭제를 취소하시려면 n을 눌러주세요! > ");
 		char flag = mine.next().charAt(0);
 		if(flag == 'n') {
@@ -63,7 +63,7 @@ public class TodoUtil {
 			return;
 		}
 		
-		l.deleteItem(l.get(index));
+		l.deleteItem(l.getList().get(index));
 		System.out.print("========== Item Deleted! ==========\n\n");
 		mine.nextLine();
 	}
@@ -75,7 +75,7 @@ public class TodoUtil {
 				+ "========== Edit Item Section ==========\n"
 				+ "The number of item to update > ");
 		int index = mine.nextInt() - 1;
-		while(index<0 || l.size()<index) {
+		while(index<0 || l.getList().size()<index) {
 			System.out.println("잘못 입력하셨습니다. 다시 입력해주세요! > ");
 			index = mine.nextInt() - 1;
 		}
@@ -129,8 +129,33 @@ public class TodoUtil {
 				temp_l.addItem(a);
 			}
 		}
-		if(temp_l.isEmpty()) 
+		if(temp_l.getList().isEmpty()) 
 			System.out.println("일치하는 정보가 없습니다!");
+		else {
+			System.out.printf("\n----------------- 검색하신 글자 \'%s\'이(가) 포함된 항목입니다! :) -----------------\n", words);
+			int i=0;
+			for (TodoItem a : temp_l.getList()) {
+				i++;
+				System.out.printf("%-2d %-5s %-10s %-20s %-10s (%-10s)\n",
+						i, a.getCategory(), a.getTitle(), a.getDesc(), a.getDue_date(), a.getCurrent_date());
+			}
+			System.out.println("-----------------------------------------------------------------------\n");
+		}
+	}
+	
+	public static void findWithCategory(TodoList l, Scanner mine) {
+		
+		System.out.print("Enter what you want to search! > ");
+		String words = mine.nextLine().trim();
+		
+		TodoList temp_l = new TodoList();
+		for(TodoItem a : l.getList()) {
+			if(a.getCategory().equals(words))
+				temp_l.addItem(a);
+		}
+		
+		if(temp_l.getList().isEmpty())
+			System.out.println("일치하는 카테고리가 없습니다!");
 		else {
 			System.out.printf("\n----------------- 검색하신 글자 \'%s\'이(가) 포함된 항목입니다! :) -----------------\n", words);
 			int i=0;
@@ -165,8 +190,8 @@ public class TodoUtil {
 	public static void saveList(TodoList l, String filename) {
 		File file = new File(filename);
 		try(FileWriter f = new FileWriter(file)) {
-			for(int i=0; i<l.size(); i++) {
-				TodoItem tmp = l.get(i);
+			for(int i=0; i<l.getList().size(); i++) {
+				TodoItem tmp = l.getList().get(i);
 				//System.out.println("TEST!!" + tmp.toSaveString());
 				f.write(tmp.toSaveString());
 			}
@@ -201,7 +226,7 @@ public class TodoUtil {
 			while(line!=null);
 			
 			System.out.println("*******************\n*"+
-						l.size() + "개의 항목을 읽었습니다!*\n"
+						l.getList().size() + "개의 항목을 읽었습니다!*\n"
 								+ "*******************");
 			br.close();
 		} catch (FileNotFoundException e) {
