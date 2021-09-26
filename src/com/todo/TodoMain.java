@@ -62,18 +62,27 @@ public class TodoMain {
 				l.sortByDate();
 				isList = true;
 				break;
-
-			case "exit":
-				quit = true;
-				TodoUtil.saveList(l, "todolist.txt");
+				
+			case "ls_date_desc":
+				l.sortByReverseDate();				
+				isList = true;
+				break;
+				
+			case "find":
+				TodoUtil.findItems(l, sc);
 				break;
 				
 			case "help":
 				Menu.displaymenu();
 				break;
-				
+			
+			case "exit":
+				quit = true;
+				TodoUtil.saveList(l, "todolist.txt");
+				break;
+							
 			default:
-				System.out.println("잘못 입력하셨습니다. 메뉴를 확인하시고 해당 단어를 입력해주세요! >");
+				System.out.println("잘못 입력하셨습니다. 메뉴를 확인하시고 해당 단어를 입력해주세요!");
 				break;
 			}
 			if(isList) l.listAll();

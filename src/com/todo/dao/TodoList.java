@@ -43,13 +43,13 @@ public class TodoList implements List {
 		}
 		String title = "Title";
 		String desc = "Description";
-		System.out.printf("\n--------- Total Items ---------\n%-20s      %-20s\n", title, desc);
+		System.out.printf("\n----------------- Total Items -----------------\n%-20s      %-20s\n", title, desc);
 		int i=1;
 		for (TodoItem myitem : list) {
 			System.out.printf("%d. %-20s | %-20s\n", i, myitem.getTitle(), myitem.getDesc());
 			i++;
 		}
-		System.out.print("\n");
+		System.out.print("------------------------------------------------\n");
 	}
 	
 	public void reverseList() {
@@ -59,7 +59,12 @@ public class TodoList implements List {
 	public void sortByDate() {
 		Collections.sort(list, new TodoSortByDate());
 	}
-
+	
+	public void sortByReverseDate() {
+		Collections.sort(list, new TodoSortByDate());
+		Collections.reverse(list);
+	}
+	
 	public int indexOf(TodoItem t) {
 		return list.indexOf(t);
 	}

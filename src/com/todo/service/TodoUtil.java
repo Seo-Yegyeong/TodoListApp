@@ -39,7 +39,7 @@ public class TodoUtil {
 		TodoItem t = new TodoItem(cate, title, desc, due_date);
 		list.addItem(t);
 		
-		System.out.print("Item Created!\n\n");
+		System.out.print("========== Item Created! ==========\n\n");
 	}
 
 	public static void deleteItem(TodoList l, Scanner mine) {
@@ -58,12 +58,14 @@ public class TodoUtil {
 		System.out.print(tmp.toString() + "\n정말 삭제하시겠습니까? 삭제를 취소하시려면 n을 눌러주세요! > ");
 		char flag = mine.next().charAt(0);
 		if(flag == 'n') {
-			System.out.println("Canceled!");
+			System.out.println("========== Canceled! ==========\n\n");
+			mine.nextLine();
 			return;
 		}
 		
-		l.remove(index);
-		System.out.print("Item Deleted!\n\n");
+		l.deleteItem(l.get(index));
+		System.out.print("========== Item Deleted! ==========\n\n");
+		mine.nextLine();
 	}
 
 
@@ -82,19 +84,23 @@ public class TodoUtil {
 		System.out.print(tmp.toString() + "\n수정할 항목입니다. 수정을 취소하시려면 n을 눌러주세요! > ");
 		char flag = mine.next().charAt(0);
 		if(flag == 'n') {
-			System.out.println("Canceled!");
+			System.out.println("========== Canceled! ==========");
+			mine.nextLine();
 			return;
 		}
+		mine.nextLine();
 		
 		System.out.print("\nThe new Category of the item > ");
 		String new_cate = mine.nextLine().trim();
 		
-		System.out.print("\nThe new Title of the item > ");
-		String new_title = mine.nextLine().trim();
-		if (l.isDuplicate(new_title)) {
-			System.out.println("동일한 Title을 중복해서 사용하실 수 없습니다. :)");
-			return;
+		String new_title;
+		do {
+			System.out.print("\nThe new Title of the item > ");
+			new_title = mine.nextLine().trim();
+			if(l.isDuplicate(new_title))
+				System.out.println("동일한 Title을 중복해서 사용하실 수 없습니다. :)\n다시 입력해주세요!");
 		}
+		while (l.isDuplicate(new_title));
 		
 		System.out.print("The new description > ");
 		String new_description = mine.nextLine().trim();
@@ -102,10 +108,39 @@ public class TodoUtil {
 		System.out.print("The new due date > ");
 		String new_due_date = mine.nextLine().trim();
 		
-		l.getList().remove(index);
-		l.add(new TodoItem(new_cate, new_title, new_description, new_due_date));
-		System.out.print("Item Updated!\n\n");
+		l.deleteItem(tmp);
+		l.addItem(new TodoItem(new_cate, new_title, new_description, new_due_date));
+		System.out.print("========== Item Updated! ==========\n\n");
 		
+	}
+	
+	public static void findItems(TodoList l, Scanner mine) {
+		
+		System.out.print("Enter what you want to search! > ");
+		String words = mine.nextLine().trim();
+		
+		TodoList temp_l = new TodoList(); //검색어가 포함된 항목들을 모아서 따로 list에 저장하기 위함.
+		for(TodoItem a : l.getList()) {
+			if( a.getCategory().contains(words) == true
+					|| a.getTitle().contains(words) == true
+					|| a.getDesc().contains(words) == true
+					|| a.getDue_date().contains(words) == true ) {
+				//System.out.println("TEST!!!" + a.toString());
+				temp_l.addItem(a);
+			}
+		}
+		if(temp_l.isEmpty()) 
+			System.out.println("일치하는 정보가 없습니다!");
+		else {
+			System.out.printf("\n----------------- 검색하신 글자 \'%s\'이(가) 포함된 항목입니다! :) -----------------\n", words);
+			int i=0;
+			for (TodoItem a : temp_l.getList()) {
+				i++;
+				System.out.printf("%-2d %-5s %-10s %-20s %-10s (%-10s)\n",
+						i, a.getCategory(), a.getTitle(), a.getDesc(), a.getDue_date(), a.getCurrent_date());
+			}
+			System.out.println("-----------------------------------------------------------------------\n");
+		}
 	}
 
 	public static void listAll(TodoList l) {
@@ -114,15 +149,16 @@ public class TodoUtil {
 			return;
 		}
 
-		System.out.printf("\n--------------------------- Total Items ---------------------------\n");
+		System.out.printf("\n----------------------------- Total Items -----------------------------\n");
 		//		+ "No. %-20s   %-20s   %-20s   %-20s (%-20s)\n", "Category", "Title", "Description", "Due Date", "Saved time");
 		int i=1;
 		for (TodoItem item : l.getList()) {
-			System.out.printf("%-2d %-5s %-10s %-20s %-10s (%-10s)\n",
+			
+			System.out.printf("%-2d %-5s %-15s %-20s %-10s (%-10s)\n",
 					i, item.getCategory(), item.getTitle(), item.getDesc(), item.getDue_date(), item.getCurrent_date());
 			i++;
 		}
-		System.out.print("\n");
+		System.out.println("-----------------------------------------------------------------------\n");
 	}
 	
 	//Implement File I/O
@@ -134,11 +170,15 @@ public class TodoUtil {
 				//System.out.println("TEST!!" + tmp.toSaveString());
 				f.write(tmp.toSaveString());
 			}
-			System.out.println("모든 데이터가 저장되었습니다!");
+			System.out.println("\n**********************"
+							+ "\n*모든 데이터가 저장되었습니다!*\n"
+							+ "**********************");
 			f.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.out.println("todolist.txt 파일이 없습니다.");
+			System.out.println("**************************"
+					+ "\n*todolist.txt 파일이 없습니다.*\n"
+					+ "**************************");
 			//e.printStackTrace();
 		}
 	}
@@ -160,12 +200,16 @@ public class TodoUtil {
 			}
 			while(line!=null);
 			
-			System.out.println(l.size() + "개의 항목을 읽었습니다!");
+			System.out.println("*******************\n*"+
+						l.size() + "개의 항목을 읽었습니다!*\n"
+								+ "*******************");
 			br.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
-			System.out.println("todolist.txt 파일이 없습니다.");
+			System.out.println("**************************"
+							+ "\n*todolist.txt 파일이 없습니다.*\n"
+							+ "**************************");
 		}
 		
 	}

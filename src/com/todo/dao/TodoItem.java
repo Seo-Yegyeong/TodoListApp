@@ -2,6 +2,7 @@ package com.todo.dao;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Formatter;
 
 public class TodoItem {
 	private String category;
@@ -89,7 +90,7 @@ public class TodoItem {
     
     @Override
 	public String toString() {
-		return "[" + category + "] " + title + " - " + desc + " - due: " + due_date
+    	return "[" + category + "] " + title + " - " + desc + " - due: " + due_date
 				+ " (" + current_date + ")";
 	}
 
