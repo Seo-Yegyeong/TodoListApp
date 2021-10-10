@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Formatter;
 
 public class TodoItem {
+	private int id;
 	private String category;
     private String title;
     private String desc;
@@ -36,6 +37,7 @@ public class TodoItem {
      */
 	public TodoItem(String nextToken, String nextToken2, String nextToken3, String nextToken4, String nextToken5) {
 		// TODO Auto-generated constructor stub
+		//this.id=token;
 		this.category=nextToken;
     	this.title=nextToken2;
         this.desc=nextToken3;
@@ -88,12 +90,25 @@ public class TodoItem {
     }
     
     
-    @Override
+    public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	@Override
 	public String toString() {
     	return "[" + category + "] " + title + " - " + desc + " - due: " + due_date
 				+ " (" + current_date + ")";
 	}
 
+    public void printItemWithFormat() {
+		System.out.printf("%-2d %-5s %-10s %-20s %-10s (%-10s)\n",
+				this.id, this.getCategory(), this.getTitle(), this.getDesc(), this.getDue_date(), this.getCurrent_date());
+	}
+    
 	//for saving file
     public String toSaveString() {
     	//우선은 이렇게 하고 json 공부하면 추가해보자!

@@ -37,25 +37,24 @@ public class TodoUtil {
 		due_date = mine.nextLine().trim();
 		
 		TodoItem t = new TodoItem(cate, title, desc, due_date);
-		list.addItem(t);
-		
-		System.out.print("========== Item Created! ==========\n\n");
+		if(list.addItem(t)>0)
+			System.out.print("========== Item Created! ==========\n\n");
 	}
 
 	public static void deleteItem(TodoList l, Scanner mine) {
 		
-		int index;
+		int index=0, check=0;
 		System.out.print("\n"
 				+ "========== Delete Item Section ==========\n"
 				+ "The number of item to remove > ");
 		index = mine.nextInt() - 1;
-		while(index<0 || l.getList().size()<index) {
+		while(index<0 || l.getSize()<index) {
 			System.out.println("잘못 입력하셨습니다. 다시 입력해주세요! > ");
 			index = mine.nextInt() - 1;
 		}
 		
-		TodoItem tmp = l.getList().get(index);
-		System.out.print(tmp.toString() + "\n정말 삭제하시겠습니까? 삭제를 취소하시려면 n을 눌러주세요! > ");
+		System.out.print(l.findItem(1, index, null, null).toString() + 
+						"\n정말 삭제하시겠습니까? 삭제를 취소하시려면 n을 눌러주세요! > ");
 		char flag = mine.next().charAt(0);
 		if(flag == 'n') {
 			System.out.println("========== Canceled! ==========\n\n");
@@ -63,8 +62,11 @@ public class TodoUtil {
 			return;
 		}
 		
-		l.deleteItem(l.getList().get(index));
-		System.out.print("========== Item Deleted! ==========\n\n");
+		check = l.deleteItem(index);
+		if(check!=0)
+			System.out.print("========== Item Deleted! ==========\n\n");
+		else
+			System.out.print("========= Fail to Delete! =========\n\n");
 		mine.nextLine();
 	}
 
@@ -75,13 +77,12 @@ public class TodoUtil {
 				+ "========== Edit Item Section ==========\n"
 				+ "The number of item to update > ");
 		int index = mine.nextInt() - 1;
-		while(index<0 || l.getList().size()<index) {
+		while(index<1 || l.getSize()<index) {
 			System.out.println("잘못 입력하셨습니다. 다시 입력해주세요! > ");
 			index = mine.nextInt() - 1;
 		}
 		
-		TodoItem tmp = l.getList().get(index);
-		System.out.print(tmp.toString() + "\n수정할 항목입니다. 수정을 취소하시려면 n을 눌러주세요! > ");
+		System.out.print(l.findItem(1, index, null, null).toString() + "\n수정할 항목입니다. 수정을 취소하시려면 n을 눌러주세요! > ");
 		char flag = mine.next().charAt(0);
 		if(flag == 'n') {
 			System.out.println("========== Canceled! ==========");
@@ -108,18 +109,40 @@ public class TodoUtil {
 		System.out.print("The new due date > ");
 		String new_due_date = mine.nextLine().trim();
 		
-		l.deleteItem(tmp);
+		l.deleteItem(index);
 		l.addItem(new TodoItem(new_cate, new_title, new_description, new_due_date));
 		System.out.print("========== Item Updated! ==========\n\n");
 		
 	}
 	
-	public static void findItems(TodoList l, Scanner mine) {
+public static void findItems(TodoList l, int findCase, Scanner mine) {
 		
 		System.out.print("Enter what you want to search! > ");
-		String words = mine.nextLine().trim();
+		String searchString = mine.nextLine().trim();
 		
-		TodoList temp_l = new TodoList(); //검색어가 포함된 항목들을 모아서 따로 list에 저장하기 위함.
+		switch (findCase) {
+		case 2:
+			l.findItem(findCase, 0, null, null);
+		case 4:
+			l.findItem(findCase, 0, null, searchString);
+			break;
+		case 3:
+			l.findItem(findCase, 0, searchString, null);
+		}
+		//previous codes (this code is for week6, but it does not fit with professor's demand.)
+		/*String searchText;
+		TodoItem temp;
+		List numList = new ArrayList<Integer>();
+		
+		for(int i=1; i<=l.getSize(); i++) {
+			temp = l.find_item(i);
+			searchText = temp.getTitle() + temp.getTitle() + temp.getDesc() + temp.getCurrent_date() + temp.getDue_date();
+			if(searchText.contains(words))
+				numList.add(i);
+		}*/
+		
+		//previous code (maybe week5)
+		/*TodoList temp_l = new TodoList(); //검색어가 포함된 항목들을 모아서 따로 list에 저장하기 위함.
 		for(TodoItem a : l.getList()) {
 			if( a.getCategory().contains(words) == true
 					|| a.getTitle().contains(words) == true
@@ -140,54 +163,25 @@ public class TodoUtil {
 						i, a.getCategory(), a.getTitle(), a.getDesc(), a.getDue_date(), a.getCurrent_date());
 			}
 			System.out.println("-----------------------------------------------------------------------\n");
-		}
-	}
-	
-	public static void findWithCategory(TodoList l, Scanner mine) {
-		
-		System.out.print("Enter what you want to search! > ");
-		String words = mine.nextLine().trim();
-		
-		TodoList temp_l = new TodoList();
-		for(TodoItem a : l.getList()) {
-			if(a.getCategory().equals(words))
-				temp_l.addItem(a);
-		}
-		
-		if(temp_l.getList().isEmpty())
-			System.out.println("일치하는 카테고리가 없습니다!");
-		else {
-			System.out.printf("\n----------------- 검색하신 글자 \'%s\'이(가) 포함된 항목입니다! :) -----------------\n", words);
-			int i=0;
-			for (TodoItem a : temp_l.getList()) {
-				i++;
-				System.out.printf("%-2d %-5s %-10s %-20s %-10s (%-10s)\n",
-						i, a.getCategory(), a.getTitle(), a.getDesc(), a.getDue_date(), a.getCurrent_date());
-			}
-			System.out.println("-----------------------------------------------------------------------\n");
-		}
+		}*/
 	}
 
 	public static void listAll(TodoList l) {
-		if(l.getList().isEmpty()) {
-			System.out.println("To do list가 현재 비어있습니다. 예쁘게 채워주세요! :)\n");
+		if(l.getSize() == 0) {
+			System.out.println("To do list가 현재 비어있습니다. 할 일들을 적어주세요! :)\n");
 			return;
 		}
 
 		System.out.printf("\n----------------------------- Total Items -----------------------------\n");
-		//		+ "No. %-20s   %-20s   %-20s   %-20s (%-20s)\n", "Category", "Title", "Description", "Due Date", "Saved time");
-		int i=1;
-		for (TodoItem item : l.getList()) {
-			
-			System.out.printf("%-2d %-5s %-15s %-20s %-10s (%-10s)\n",
-					i, item.getCategory(), item.getTitle(), item.getDesc(), item.getDue_date(), item.getCurrent_date());
-			i++;
+		
+		for (int i=0; i<l.getSize(); i++) {
+			l.findItem(1, i, null, null);
 		}
 		System.out.println("-----------------------------------------------------------------------\n");
 	}
 	
 	//Implement File I/O
-	public static void saveList(TodoList l, String filename) {
+	/*public static void saveList(TodoList l, String filename) {
 		File file = new File(filename);
 		try(FileWriter f = new FileWriter(file)) {
 			for(int i=0; i<l.getList().size(); i++) {
@@ -237,6 +231,6 @@ public class TodoUtil {
 							+ "**************************");
 		}
 		
-	}
+	}*/
 	
 }
