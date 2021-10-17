@@ -11,8 +11,11 @@ public class TodoItem {
     private String desc;
     private String due_date;
     private String current_date;
+    private int is_completed;
     
-    /**
+
+
+	/**
      * Constructor
      * @param title
      * @param desc
@@ -26,6 +29,8 @@ public class TodoItem {
         this.due_date=due_date;
         SimpleDateFormat format1 = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
         this.current_date=format1.format(new Date());
+        this.is_completed = 0;
+        
 	}
     
     /**
@@ -44,12 +49,32 @@ public class TodoItem {
         this.desc=nextToken3;
         this.due_date=nextToken4;
         this.current_date=nextToken5;
+        this.is_completed = 0;
+	}
+	
+	public TodoItem(int id, String nextToken, String nextToken2, String nextToken3, String nextToken4, String nextToken5, int comp) {
+		// TODO Auto-generated constructor stub
+		this.id = id;
+		this.category=nextToken;
+    	this.title=nextToken2;
+        this.desc=nextToken3;
+        this.due_date=nextToken4;
+        this.current_date=nextToken5;
+        this.is_completed = comp;
 	}
 
 	/**
      * Getter, Setter
      * @return
      */
+	public int getIsCompleted() {
+		return is_completed;
+	}
+
+	public void setIsCompleted(int comp) {
+		this.is_completed= comp;
+	}
+	
     public String getCategory() {
 		return category;
 	}
@@ -101,13 +126,15 @@ public class TodoItem {
 
 	@Override
 	public String toString() {
-    	return "[" + category + "] " + title + " - " + desc + " - due: " + due_date
-				+ " (" + current_date + ")";
-	}
-
-    public void printItemWithFormat() {
-		System.out.printf("%-2d %-6s %-10s %-20s %-10s (%s)\n",
-				this.id, this.getCategory(), this.getTitle(), this.getDesc(), this.getDue_date(), this.getCurrent_date());
+		String sf=null, temp_title=null;
+    	if(is_completed==1) //if it is conducted, then do next instruction.
+    		temp_title = this.getTitle() + "[¡î]";
+    	else
+    		temp_title = this.getTitle();
+    	
+    	sf = String.format("%-2d [%-5s] %-15s %-20s %-10s (%s)\n",
+				this.id, this.getCategory(), temp_title, this.getDesc(), this.getDue_date(), this.getCurrent_date());    	
+    	return sf;
 	}
     
 	//for saving file

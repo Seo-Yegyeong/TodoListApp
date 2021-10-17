@@ -138,14 +138,22 @@ public class TodoList {
 
 	/*
 	 * get all items in DB and return that ArrayList
+	 * flag == 0; print all items in list
+	 * flag == 1; print completed items
+	 * flag == 2; print items not completed yet
 	 */
-	public ArrayList<TodoItem> getList() {
+	public ArrayList<TodoItem> getList(int flag) {
 		ArrayList<TodoItem> list =  new ArrayList<TodoItem>();
 		TodoItem item = null;
+		String sql="SELECT * FROM list";
 		
+		if(flag==1) //for completed items 
+			sql += " where is_completed = 1";
+		else if(flag==2)
+			sql += " where is_completed = 0";
 		try {
 			
-			pstmt = conn.prepareStatement(new String("Select * from list"));
+			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
@@ -155,8 +163,9 @@ public class TodoList {
 				String category = rs.getString("category");
 				String current_date = rs.getString("current_date");
 				String due_date = rs.getString("due_date");
+				int comp = rs.getInt("is_completed");
 				
-				item = new TodoItem(id, category, title, desc, due_date, current_date);
+				item = new TodoItem(id, category, title, desc, due_date, current_date, comp);
 				list.add(item);
 				
 			}
@@ -187,6 +196,71 @@ public class TodoList {
 		return count;
 	}
 	
+	public ArrayList<String> getCategories() {
+		// TODO Auto-generated method stub
+		String sql = "Select Distinct category from list;";
+		ArrayList<String> array = new ArrayList<>();
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				array.add(rs.getString("category"));
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return array;
+	}
+	
+	public ArrayList<TodoItem> getOrderedList(String orderby, int ordering) {
+		// TODO Auto-generated method stub
+		ArrayList<TodoItem> list = new ArrayList<TodoItem>();
+		TodoItem item = null;
+		Statement stmt;
+		
+		try {
+			stmt = conn.createStatement();
+			String sql = "SELECT * FROM list ORDER BY " + orderby;
+			
+			if(ordering==0)
+				sql += " desc";
+			rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) {
+				item = new TodoItem(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),  rs.getString(6), rs.getString(5));
+				list.add(item);
+			}
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	public int markCompleted(int id) {
+		// TODO Auto-generated method stub
+		String sql = "Update list set is_completed=1 where id = ?;";
+		int count=0;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, id);
+			count =  pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	
+	
+	
 	/**
 	 * This is a method to find elements.
 	 * 
@@ -197,7 +271,6 @@ public class TodoList {
 	 * @return
 	 */
 	public ArrayList<TodoItem> findItem(int flag, int index, String category, String word) {
-		String searchString=null;
 		String sql=null;
 		TodoItem item = null;
 		ArrayList<TodoItem> a = new ArrayList<>();
@@ -211,30 +284,20 @@ public class TodoList {
 			sql = "Select * from list where id = " + index + ";";
 			break;
 			
-		case 2: //Query for finding all kind of category
-			
-			sql = "Select Distinct category from list;";
-			break;
-			
 		case 3: //Query for finding items with category name
 			
 			sql = "Select * from list where category = \'" + category + "\';";
-			searchString = category;
 			break;
 			
 		case 4: //Query for finding items with '%' key
 			
 			sql = "Select * from list"
-					+ " where title like \'%?%\' or memo like \'%?%\' or category like \'%?%\' or due_date like \'%?%\'";
-			searchString = word;
+					+ " where title like ? or memo like ? or category like ? or due_date like ? ";
 			break;
-			
 		}
 		
 		
-		//in case 1, it will return a TodoItem object and stop.
-		//in this case, we don't have to print out.
-		if(flag == 1) {
+		if(flag == 1) { //in case 1
 			try {
 				
 				pstmt = conn.prepareStatement(sql);
@@ -242,18 +305,11 @@ public class TodoList {
 				
 				//examine result
 				if(rs == null) {
-					//System.out.println("일치하는 정보가 없습니다!");
 					return null;
 				}
 				
 				while(rs.next()) {
-					int id = rs.getInt("id");
-					String cate = rs.getString("category");
-					String title = rs.getString("title");
-					String memo = rs.getString("memo");
-					String current = rs.getString("current_date");
-					String due = rs.getString("due_date");
-					item = new TodoItem(id, cate, title, memo, due, current);
+					item = new TodoItem(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),  rs.getString(6), rs.getString(5));
 					a.add(item);
 				}
 				
@@ -262,75 +318,64 @@ public class TodoList {
 			}
 			return a;
 		}
-		
-		//in case 2,3,4, it will print all of ResultSet.
-		try {
-			
-			//add word for '?' part in the case 4!
-			if(flag == 4) {
+		else { //in case 3,4
+			try {
+				
 				pstmt = conn.prepareStatement(sql);
-				for(int i=1; i<=4; i++) {
-					System.out.println("Hey!");
-					pstmt.setString(i, word);
+				
+				//add word for '?' part in the case 4!
+				if(flag == 4) {
+					for(int i=1; i<=4; i++) {
+						System.out.println("!!TEST!!");
+						pstmt.setString(i, "%" + word + "%");
+					}
 				}
+				
+				//execute Query
+				rs = pstmt.executeQuery();
+				
+				//examine result
+				if(rs == null) {
+					return null;
+				}
+				
+				System.out.println("conduct here1!");
+				//create new array for item list.
+				while(rs.next()) {
+					item = new TodoItem(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),  rs.getString(6), rs.getString(5));
+					a.add(item);
+				}
+				System.out.println("conduct here2!");
+				return a;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			
-			//execute Query
-			pstmt = conn.prepareStatement(sql);
-			rs = pstmt.executeQuery();
-			
-			//examine result
-			if(rs == null) {
-				//System.out.println("일치하는 정보가 없습니다!");
-				return null;
-			}
-
-			//create new array for item list.
-			while(rs.next()) {
-				int id = rs.getInt("id");
-				String cate = rs.getString("category");
-				String title = rs.getString("title");
-				String memo = rs.getString("memo");
-				String current = rs.getString("current_date");
-				String due = rs.getString("due_date");
-				item = new TodoItem(id, cate, title, memo, due, current);
-				a.add(item);
-				//item = new TodoItem(rs.getInt(1), rs.getString(1), rs.getString(2), rs.getString(3),  rs.getString(5), rs.getString(6));
-				//a.add(item);
-			}
-			return a;
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		
+		System.out.println("conduct here3!");
 		return a;
 	}
-
+	
+		
 	/*public void sortByName() {
 		Collections.sort(list, new TodoSortByName());
 
-	}*/
-		
-	/*
+	}
 	public void reverseList() {
 		Collections.reverse(list);
 	}
-
 	public void sortByDate() {
 		Collections.sort(list, new TodoSortByDate());
-	}
-	
+	}	
 	public void sortByReverseDate() {
 		Collections.sort(list, new TodoSortByDate());
 		Collections.reverse(list);
-	}
-	
+	}	
 	public int indexOf(TodoItem t) {
 		return list.indexOf(t);
-	}
-*/
+	}*/
+	
+	
 	public Boolean isDuplicate(String title) {
 		
 		String sql = "Select title from list;";
@@ -358,4 +403,10 @@ public class TodoList {
 	public void closeConnection() {
 		DbConnect.closeConnection();
 	}
+
+	
+
+	
+
+	
 }

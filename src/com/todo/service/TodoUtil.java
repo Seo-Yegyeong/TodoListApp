@@ -143,9 +143,6 @@ public static void findItems(TodoList l, int findCase, Scanner mine) {
 		case 1:
 			array = l.findItem(findCase, index, null, null);
 			break;
-		case 2:
-			array = l.findItem(findCase, 0, null, null);
-			break;
 		case 3:
 			array = l.findItem(findCase, 0, searchString, null);
 			break;
@@ -168,9 +165,9 @@ public static void findItems(TodoList l, int findCase, Scanner mine) {
 	Iterator<TodoItem> it = array.iterator();
 	while(it.hasNext()) {
 		item = it.next();
-		item.printItemWithFormat();
+		System.out.print(item.toString());
 	}
-	System.out.println("------------------------------------------------------------------------\n");
+	System.out.println("-------------------------------------------------------------------------\n");
 	
 	
 		//previous codes (this code is for week6, but it does not fit with professor's demand.)
@@ -210,20 +207,76 @@ public static void findItems(TodoList l, int findCase, Scanner mine) {
 		}*/
 	}
 
-	public static void listAll(TodoList l) {
+	public static void listAll(TodoList l, String orderby, int ordering) {
 		if(l.getSize() == 0) {
 			System.out.println("To do list가 현재 비어있습니다. 할 일들을 적어주세요! :)\n");
 			return;
 		}
-		String title = "Title";
-		String desc = "Description";
-		System.out.printf("\n----------------- Total Items -----------------\n     %-20s      %-20s\n", title, desc);
 
-		for (TodoItem myitem : l.getList()) {
-			System.out.printf("%d. %-20s | %-20s\n", myitem.getId(), myitem.getTitle(), myitem.getDesc());
-		}
-		System.out.print("------------------------------------------------\n");
+		System.out.printf("\n-------------------------- Total Items (%d) --------------------------\n", l.getSize());
+		//System.out.printf("%d. %-20s | %-20s\n", myItem.getId(), myItem.getTitle(), myItem.getDesc());
 		
+		if(orderby == null)
+			for (TodoItem myItem : l.getList(0)) {
+				System.out.print(myItem.toString());
+			}
+		else {
+			for (TodoItem myItem : l.getOrderedList(orderby, ordering))
+				System.out.print(myItem.toString());
+		}
+		System.out.print("-----------------------------------------------------------------------\n");
+		
+	}
+
+	public static void listCateAll(TodoList l) {
+		// TODO Auto-generated method stub
+		int count = 0;
+		for(String item : l.getCategories()) {
+			System.out.print(item + " ");
+			count++;
+		}
+		System.out.printf("\n총 %d개의 카테고리가 등록되어 있습니다.\n\n", count);
+	}
+
+	public static void completeItem(TodoList l, Scanner mine) {
+		// TODO Auto-generated method stub
+		int check=0;
+		System.out.print("\n"
+				+ "========== Mark an item completed ==========\n"
+				+ "What number you would mark as completed? > ");
+		int id = mine.nextInt();
+		mine.nextLine();
+		
+		check = l.markCompleted(id);
+		if(check > 0)
+			System.out.println("========== 완료 체크하였습니다! ==========\n");
+		else
+			System.out.println("========== 체크에 실패하였습니다! ==========\n");
+		
+	}
+
+	public static void printCompleteItem(TodoList l) {
+		// TODO Auto-generated method stub
+		System.out.println("========== 완료된 항목입니다! ==========");
+		ArrayList<TodoItem> list = l.getList(1);
+		int count=0;
+		for(TodoItem item : list) {
+			System.out.print(item.toString());
+			count++;
+		}
+		System.out.printf("========== 총 %d개의 항목이 완료되었습니다! ==========", count);
+	}
+
+	public static void printNotCompleteItem(TodoList l) {
+		// TODO Auto-generated method stub
+		System.out.println("========== 아직 완료되지 않은 항목입니다! ==========");
+		ArrayList<TodoItem> list = l.getList(2);
+		int count=0;
+		for(TodoItem item : list) {
+			System.out.print(item.toString());
+			count++;
+		}
+		System.out.printf("========== 총 %d개의 항목이 남았습니다! ==========", count);
 	}
 	
 	//Implement File I/O

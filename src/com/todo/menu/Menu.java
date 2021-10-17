@@ -17,8 +17,11 @@ public class Menu {
         System.out.println("10. find items with category name ( find_item_cate )");
         System.out.println("11. find items which include some words ( find_item )");
         System.out.println("12. show all kinds of category ( ls_cate )");
-        System.out.println("13. print menu list ( help )");
-        System.out.println("14. exit ( exit )");
+        System.out.println("13. mark an item as completed ( comp )");
+        System.out.println("14. print completed item list ( ls_comp )");
+        System.out.println("15. print not completed item list ( ls_not_comp )");
+        System.out.println("16. print menu list ( help )");
+        System.out.println("17. exit ( exit )");
         System.out.println("------------------------------------");
     }
     

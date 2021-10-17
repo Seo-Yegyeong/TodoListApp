@@ -14,7 +14,6 @@ public class TodoMain {
 		TodoList l = new TodoList();
 		//l.importData("todolist.txt");
 		
-		boolean isList = false;
 		boolean quit = false;
 		
 		System.out.println("안녕하세요! To do List 관리 어플입니다. 유익한 시간 되세요!^^");
@@ -27,7 +26,6 @@ public class TodoMain {
 		Menu.displaymenu();
 		do {
 			Menu.prompt();
-			isList = false;
 			String choice = sc.nextLine().trim();
 			
 			switch (choice) {
@@ -45,28 +43,27 @@ public class TodoMain {
 				break;
 				
 			case "ls":
-				TodoUtil.listAll(l);
+				TodoUtil.listAll(l, null, 0);
 				break;
 
 			case "ls_name_asc":
-				//l.sortByName();
-				isList = true;
+				System.out.println("제목순 정렬입니다.");
+				TodoUtil.listAll(l, "title", 1);
 				break;
 
 			case "ls_name_desc":
-				//l.sortByName();
-				//l.reverseList();
-				isList = true;
+				System.out.println("제목역순 정렬입니다.");
+				TodoUtil.listAll(l, "title", 0);
 				break;
 				
 			case "ls_date":
-				//l.sortByDate();
-				isList = true;
+				System.out.println("날짜순 정렬입니다.");
+				TodoUtil.listAll(l, "due_date", 1);
 				break;
 				
 			case "ls_date_desc":
-				//l.sortByReverseDate();			
-				isList = true;
+				System.out.println("날짜역순 정렬입니다.");
+				TodoUtil.listAll(l, "due_date", 0);			
 				break;
 			
 			case "find_item_id":
@@ -82,7 +79,19 @@ public class TodoMain {
 				break;
 				
 			case "ls_cate":
-				TodoUtil.findItems(l, 2, sc);
+				TodoUtil.listCateAll(l);
+				break;
+			
+			case "comp":
+				TodoUtil.completeItem(l, sc);
+				break;
+				
+			case "ls_comp":
+				TodoUtil.printCompleteItem(l);
+				break;
+				
+			case "ls_not_comp":
+				TodoUtil.printNotCompleteItem(l);
 				break;
 				
 			case "help":
@@ -98,7 +107,6 @@ public class TodoMain {
 				System.out.println("잘못 입력하셨습니다. 메뉴를 확인하시고 해당 단어를 입력해주세요!");
 				break;
 			}
-			if(isList) TodoUtil.listAll(l);
 		} while (!quit);
 		
 		l.closeConnection();
