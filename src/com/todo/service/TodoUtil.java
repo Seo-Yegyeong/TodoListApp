@@ -43,26 +43,40 @@ public class TodoUtil {
 
 	public static void deleteItem(TodoList l, Scanner mine) {
 		
-		int index=0, check=0;
+		ArrayList<TodoItem> array;
+		int check=0, index=0;
 		TodoItem item;
+		StringTokenizer st;
 		
 		System.out.print("\n"
 				+ "========== Delete Item Section ==========\n"
-				+ "The number of item to remove > ");
+				+ "The number of item to remove.\n(You can choose items more than one. If you want to do delete 4, 10, and 24th item, then enter like this format. => 4 10 24 )\n> ");
 		index = mine.nextInt();
+
+		//String text = mine.nextLine().trim();
+		//st = new StringTokenizer(text, " ");
 		
-		ArrayList<TodoItem> array = l.findItem(1, index, null, null);
+		array = l.findItem(1, index, null, null);
 		item = array.get(0);
 		if(item == null)	return;
 		
-		System.out.print(item.toString() + 
-						"\n정말 삭제하시겠습니까? 삭제하시려면 y를 눌러주세요! > ");
+		System.out.print(item.toString() + "\n정말 삭제하시겠습니까? 삭제하시려면 y를 눌러주세요! > ");
 		char flag = mine.next().charAt(0);
 		if(flag != 'y') {
 			System.out.println("========== Canceled! ==========\n\n");
 			mine.nextLine();
 			return;
 		}
+		
+		/*while(st.hasMoreTokens()) {
+			i = (Integer) st.nextElement();
+			array = l.findItem(1, i, null, null);
+			item = array.get(0);
+			if(item == null)
+				continue;
+			else
+				check = l.deleteItem(i);
+		}*/
 		
 		check = l.deleteItem(index);
 		if(check>0)
@@ -264,7 +278,7 @@ public static void findItems(TodoList l, int findCase, Scanner mine) {
 			System.out.print(item.toString());
 			count++;
 		}
-		System.out.printf("========== 총 %d개의 항목이 완료되었습니다! ==========", count);
+		System.out.printf("========== 총 %d개의 항목이 완료되었습니다! ==========\n", count);
 	}
 
 	public static void printNotCompleteItem(TodoList l) {
@@ -276,7 +290,7 @@ public static void findItems(TodoList l, int findCase, Scanner mine) {
 			System.out.print(item.toString());
 			count++;
 		}
-		System.out.printf("========== 총 %d개의 항목이 남았습니다! ==========", count);
+		System.out.printf("========== 총 %d개의 항목이 남았습니다! ==========\n", count);
 	}
 	
 	//Implement File I/O

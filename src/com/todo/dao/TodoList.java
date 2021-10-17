@@ -326,7 +326,6 @@ public class TodoList {
 				//add word for '?' part in the case 4!
 				if(flag == 4) {
 					for(int i=1; i<=4; i++) {
-						System.out.println("!!TEST!!");
 						pstmt.setString(i, "%" + word + "%");
 					}
 				}
@@ -339,20 +338,17 @@ public class TodoList {
 					return null;
 				}
 				
-				System.out.println("conduct here1!");
 				//create new array for item list.
 				while(rs.next()) {
 					item = new TodoItem(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),  rs.getString(6), rs.getString(5));
 					a.add(item);
 				}
-				System.out.println("conduct here2!");
-				return a;
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		System.out.println("conduct here3!");
 		return a;
 	}
 	
