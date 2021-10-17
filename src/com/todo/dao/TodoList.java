@@ -112,12 +112,33 @@ public class TodoList {
 		return check;
 	}
 
-	/*void editItem(TodoItem t, TodoItem updated) {
-		int index = list.indexOf(t);
-		list.remove(index);
-		list.add(updated);
-	}*/
+	public int updateItem(TodoItem t, int index) {
+		String sql = "update list set category=?, title=?, memo=?, due_date=?, current_date=?"
+				+ " where id = ?;";
+		PreparedStatement pstmt;
+		
+		int count=0;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, t.getCategory());
+			pstmt.setString(2, t.getTitle());
+			pstmt.setString(3, t.getDesc());
+			pstmt.setString(4, t.getDue_date());
+			pstmt.setString(5, t.getCurrent_date());
+			pstmt.setInt(6, index);
+			
+			count = pstmt.executeUpdate();
+			pstmt.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return count;
+	}
 
+	/*
+	 * get all items in DB and return that ArrayList
+	 */
 	public ArrayList<TodoItem> getList() {
 		ArrayList<TodoItem> list =  new ArrayList<TodoItem>();
 		TodoItem item = null;
@@ -135,7 +156,7 @@ public class TodoList {
 				String current_date = rs.getString("current_date");
 				String due_date = rs.getString("due_date");
 				
-				item = new TodoItem(category, title, desc, due_date, current_date);
+				item = new TodoItem(id, category, title, desc, due_date, current_date);
 				list.add(item);
 				
 			}
@@ -175,8 +196,13 @@ public class TodoList {
 	 * @param searchString is for case 4
 	 * @return
 	 */
-	public TodoItem findItem(int flag, int index, String category, String searchString) {
+	public ArrayList<TodoItem> findItem(int flag, int index, String category, String word) {
+		String searchString=null;
 		String sql=null;
+		TodoItem item = null;
+		ArrayList<TodoItem> a = new ArrayList<>();
+		pstmt = null;
+		rs = null;
 		
 		//set query_sentence; 
 		switch (flag) {
@@ -193,19 +219,18 @@ public class TodoList {
 		case 3: //Query for finding items with category name
 			
 			sql = "Select * from list where category = \'" + category + "\';";
+			searchString = category;
 			break;
 			
 		case 4: //Query for finding items with '%' key
 			
 			sql = "Select * from list"
-					+ "where title like ? or memo like ? or category like ? or due_date like ?;";
+					+ " where title like \'%?%\' or memo like \'%?%\' or category like \'%?%\' or due_date like \'%?%\'";
+			searchString = word;
 			break;
 			
 		}
 		
-		TodoItem item = null;
-		pstmt = null;
-		rs = null;
 		
 		//in case 1, it will return a TodoItem object and stop.
 		//in this case, we don't have to print out.
@@ -214,65 +239,80 @@ public class TodoList {
 				
 				pstmt = conn.prepareStatement(sql);
 				rs = pstmt.executeQuery();
-				item = new TodoItem(rs.getString("title"), rs.getString("memo"), rs.getString("category"), rs.getString("current_date"), rs.getString("due_date"));
+				
+				//examine result
+				if(rs == null) {
+					//System.out.println("일치하는 정보가 없습니다!");
+					return null;
+				}
+				
+				while(rs.next()) {
+					int id = rs.getInt("id");
+					String cate = rs.getString("category");
+					String title = rs.getString("title");
+					String memo = rs.getString("memo");
+					String current = rs.getString("current_date");
+					String due = rs.getString("due_date");
+					item = new TodoItem(id, cate, title, memo, due, current);
+					a.add(item);
+				}
 				
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-			return item;
+			return a;
 		}
 		
 		//in case 2,3,4, it will print all of ResultSet.
 		try {
 			
-			pstmt = conn.prepareStatement(sql);
-			if(flag == 4) { //add word for '?' part in the case 4!
-				String keyword = "%" + searchString + "%";
+			//add word for '?' part in the case 4!
+			if(flag == 4) {
+				pstmt = conn.prepareStatement(sql);
 				for(int i=1; i<=4; i++) {
-					pstmt.setString(i, keyword);
+					System.out.println("Hey!");
+					pstmt.setString(i, word);
 				}
 			}
 			
+			//execute Query
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
+			//examine result
 			if(rs == null) {
-				System.out.println("일치하는 정보가 없습니다!");
+				//System.out.println("일치하는 정보가 없습니다!");
 				return null;
 			}
 
-			System.out.printf("\n----------------- 검색하신 글자 \'%s\'이(가) 포함된 항목입니다! :) -----------------\n", searchString);
+			//create new array for item list.
 			while(rs.next()) {
-				item = new TodoItem(rs.getString("title"), rs.getString("memo"), rs.getString("category"), rs.getString("current_date"), rs.getString("due_date"));
-				item.printItemWithFormat();
+				int id = rs.getInt("id");
+				String cate = rs.getString("category");
+				String title = rs.getString("title");
+				String memo = rs.getString("memo");
+				String current = rs.getString("current_date");
+				String due = rs.getString("due_date");
+				item = new TodoItem(id, cate, title, memo, due, current);
+				a.add(item);
+				//item = new TodoItem(rs.getInt(1), rs.getString(1), rs.getString(2), rs.getString(3),  rs.getString(5), rs.getString(6));
+				//a.add(item);
 			}
-			System.out.println("-----------------------------------------------------------------------\n");
+			return a;
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return item;
+		return a;
 	}
 
 	/*public void sortByName() {
 		Collections.sort(list, new TodoSortByName());
 
 	}*/
-	
-	public void listAll(TodoList l) {
 		
-		String title = "Title";
-		String desc = "Description";
-		System.out.printf("\n----------------- Total Items -----------------\n%-20s      %-20s\n", title, desc);
-		int i=1;
-		for (TodoItem myitem : l.getList()) {
-			System.out.printf("%d. %-20s | %-20s\n", i, myitem.getTitle(), myitem.getDesc());
-			i++;
-		}
-		System.out.print("------------------------------------------------\n");
-	}
 	/*
 	public void reverseList() {
 		Collections.reverse(list);

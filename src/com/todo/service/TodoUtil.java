@@ -44,26 +44,28 @@ public class TodoUtil {
 	public static void deleteItem(TodoList l, Scanner mine) {
 		
 		int index=0, check=0;
+		TodoItem item;
+		
 		System.out.print("\n"
 				+ "========== Delete Item Section ==========\n"
 				+ "The number of item to remove > ");
-		index = mine.nextInt() - 1;
-		while(index<0 || l.getSize()<index) {
-			System.out.println("잘못 입력하셨습니다. 다시 입력해주세요! > ");
-			index = mine.nextInt() - 1;
-		}
+		index = mine.nextInt();
 		
-		System.out.print(l.findItem(1, index, null, null).toString() + 
-						"\n정말 삭제하시겠습니까? 삭제를 취소하시려면 n을 눌러주세요! > ");
+		ArrayList<TodoItem> array = l.findItem(1, index, null, null);
+		item = array.get(0);
+		if(item == null)	return;
+		
+		System.out.print(item.toString() + 
+						"\n정말 삭제하시겠습니까? 삭제하시려면 y를 눌러주세요! > ");
 		char flag = mine.next().charAt(0);
-		if(flag == 'n') {
+		if(flag != 'y') {
 			System.out.println("========== Canceled! ==========\n\n");
 			mine.nextLine();
 			return;
 		}
 		
 		check = l.deleteItem(index);
-		if(check!=0)
+		if(check>0)
 			System.out.print("========== Item Deleted! ==========\n\n");
 		else
 			System.out.print("========= Fail to Delete! =========\n\n");
@@ -73,16 +75,22 @@ public class TodoUtil {
 
 	public static void updateItem(TodoList l, Scanner mine) {
 		
+		TodoItem item=null;
+		String new_cate, new_title, new_description, new_due_date;
+		int index;
+		
 		System.out.print("\n"
 				+ "========== Edit Item Section ==========\n"
 				+ "The number of item to update > ");
-		int index = mine.nextInt() - 1;
-		while(index<1 || l.getSize()<index) {
-			System.out.println("잘못 입력하셨습니다. 다시 입력해주세요! > ");
-			index = mine.nextInt() - 1;
-		}
+		index = mine.nextInt();
 		
-		System.out.print(l.findItem(1, index, null, null).toString() + "\n수정할 항목입니다. 수정을 취소하시려면 n을 눌러주세요! > ");
+		ArrayList<TodoItem> array = l.findItem(1, index, null, null);
+		item = array.get(0);
+		
+		if(item == null)	return;
+		
+		
+		System.out.print(item.toString() + "\n수정할 항목입니다. 수정을 취소하시려면 n을 눌러주세요! > ");
 		char flag = mine.next().charAt(0);
 		if(flag == 'n') {
 			System.out.println("========== Canceled! ==========");
@@ -91,12 +99,12 @@ public class TodoUtil {
 		}
 		mine.nextLine();
 		
-		System.out.print("\nThe new Category of the item > ");
-		String new_cate = mine.nextLine().trim();
 		
-		String new_title;
+		System.out.print("\nThe new category > ");
+		new_cate = mine.nextLine().trim();
+		
 		do {
-			System.out.print("\nThe new Title of the item > ");
+			System.out.print("The new title > ");
 			new_title = mine.nextLine().trim();
 			if(l.isDuplicate(new_title))
 				System.out.println("동일한 Title을 중복해서 사용하실 수 없습니다. :)\n다시 입력해주세요!");
@@ -104,31 +112,67 @@ public class TodoUtil {
 		while (l.isDuplicate(new_title));
 		
 		System.out.print("The new description > ");
-		String new_description = mine.nextLine().trim();
+		new_description = mine.nextLine().trim();
 		
 		System.out.print("The new due date > ");
-		String new_due_date = mine.nextLine().trim();
+		new_due_date = mine.nextLine().trim();
 		
-		l.deleteItem(index);
-		l.addItem(new TodoItem(new_cate, new_title, new_description, new_due_date));
+		l.updateItem(new TodoItem(new_cate, new_title, new_description, new_due_date), index);
 		System.out.print("========== Item Updated! ==========\n\n");
 		
 	}
 	
 public static void findItems(TodoList l, int findCase, Scanner mine) {
 		
-		System.out.print("Enter what you want to search! > ");
-		String searchString = mine.nextLine().trim();
-		
-		switch (findCase) {
+	int index=0;
+	String searchString=null;
+	TodoItem item = null;
+	ArrayList<TodoItem> array = null;
+	
+	if(findCase==1) {
+		System.out.print("Enter number what you want to search! > ");
+		index = mine.nextInt();
+		mine.nextLine();
+	}
+	else if (findCase == 3 || findCase == 4) {
+		System.out.print("Enter the word what you want to search! > ");
+		searchString = mine.nextLine().trim();
+	}
+	
+	switch (findCase) {
+		case 1:
+			array = l.findItem(findCase, index, null, null);
+			break;
 		case 2:
-			l.findItem(findCase, 0, null, null);
-		case 4:
-			l.findItem(findCase, 0, null, searchString);
+			array = l.findItem(findCase, 0, null, null);
 			break;
 		case 3:
-			l.findItem(findCase, 0, searchString, null);
-		}
+			array = l.findItem(findCase, 0, searchString, null);
+			break;
+		case 4:
+			array = l.findItem(findCase, 0, null, searchString);
+	}
+	
+	if(array.isEmpty()) {
+		System.out.println("일치하는 정보가 없습니다!");
+		return;
+	}
+	
+	//print result
+	if (findCase == 1)
+		System.out.printf("\n--------------------------- 검색하신 항목입니다! :) ---------------------------\n");
+	else if (findCase == 2)
+		System.out.printf("\n--------------------------- 카테고리 종류입니다! :) ---------------------------\n");
+	else
+		System.out.printf("\n----------------- 검색하신 글자 \'%s\'이(가) 포함된 항목입니다! :) -----------------\n", searchString);
+	Iterator<TodoItem> it = array.iterator();
+	while(it.hasNext()) {
+		item = it.next();
+		item.printItemWithFormat();
+	}
+	System.out.println("------------------------------------------------------------------------\n");
+	
+	
 		//previous codes (this code is for week6, but it does not fit with professor's demand.)
 		/*String searchText;
 		TodoItem temp;
@@ -171,13 +215,15 @@ public static void findItems(TodoList l, int findCase, Scanner mine) {
 			System.out.println("To do list가 현재 비어있습니다. 할 일들을 적어주세요! :)\n");
 			return;
 		}
+		String title = "Title";
+		String desc = "Description";
+		System.out.printf("\n----------------- Total Items -----------------\n     %-20s      %-20s\n", title, desc);
 
-		System.out.printf("\n----------------------------- Total Items -----------------------------\n");
-		
-		for (int i=0; i<l.getSize(); i++) {
-			l.findItem(1, i, null, null);
+		for (TodoItem myitem : l.getList()) {
+			System.out.printf("%d. %-20s | %-20s\n", myitem.getId(), myitem.getTitle(), myitem.getDesc());
 		}
-		System.out.println("-----------------------------------------------------------------------\n");
+		System.out.print("------------------------------------------------\n");
+		
 	}
 	
 	//Implement File I/O

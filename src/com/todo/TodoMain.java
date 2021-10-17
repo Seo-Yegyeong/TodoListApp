@@ -68,17 +68,22 @@ public class TodoMain {
 				//l.sortByReverseDate();			
 				isList = true;
 				break;
-				
-			case "find":
-				TodoUtil.findItems(l, 4, sc);
+			
+			case "find_item_id":
+				TodoUtil.findItems(l, 1, sc);
 				break;
 				
-			case "find_cate":
+			case "find_item_cate":
 				TodoUtil.findItems(l, 3, sc);
+				break;
+			
+			case "find_item":
+				TodoUtil.findItems(l, 4, sc);
 				break;
 				
 			case "ls_cate":
 				TodoUtil.findItems(l, 2, sc);
+				break;
 				
 			case "help":
 				Menu.displaymenu();
@@ -93,7 +98,7 @@ public class TodoMain {
 				System.out.println("잘못 입력하셨습니다. 메뉴를 확인하시고 해당 단어를 입력해주세요!");
 				break;
 			}
-			if(isList) l.listAll(l);
+			if(isList) TodoUtil.listAll(l);
 		} while (!quit);
 		
 		l.closeConnection();

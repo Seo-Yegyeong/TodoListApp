@@ -19,6 +19,7 @@ public class TodoItem {
      */
     public TodoItem(String cate, String title, String desc, String due_date) {
 		// TODO Auto-generated constructor stub
+    	
     	this.category=cate;
     	this.title=title;
         this.desc=desc;
@@ -35,9 +36,9 @@ public class TodoItem {
      * @param nextToken4
      * @param nextToken5
      */
-	public TodoItem(String nextToken, String nextToken2, String nextToken3, String nextToken4, String nextToken5) {
+	public TodoItem(int id, String nextToken, String nextToken2, String nextToken3, String nextToken4, String nextToken5) {
 		// TODO Auto-generated constructor stub
-		//this.id=token;
+		this.id = id;
 		this.category=nextToken;
     	this.title=nextToken2;
         this.desc=nextToken3;
@@ -105,7 +106,7 @@ public class TodoItem {
 	}
 
     public void printItemWithFormat() {
-		System.out.printf("%-2d %-5s %-10s %-20s %-10s (%-10s)\n",
+		System.out.printf("%-2d %-6s %-10s %-20s %-10s (%s)\n",
 				this.id, this.getCategory(), this.getTitle(), this.getDesc(), this.getDue_date(), this.getCurrent_date());
 	}
     
